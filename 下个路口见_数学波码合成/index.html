@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>下个，路口，见 · V5 AI 发音×音色解耦纯数学波码合成</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./styles/tokens.css">
+  <link rel="stylesheet" href="./styles/layout.css">
+  <link rel="stylesheet" href="./styles/components/player.css">
+  <link rel="stylesheet" href="./styles/components/multitrack.css">
+  <link rel="stylesheet" href="./styles/components/parameters.css">
+  <link rel="stylesheet" href="./styles/components/timbre-inspector.css">
+</head>
+<body>
+<main class="studio">
+  <header class="masthead">
+    <span class="brand"><i></i> PURE WAVE-CODE LAB</span>
+    <span class="edition">V5 AI MEL TIMBRE × PRONUNCIATION DISENTANGLED WAVE SYNTH</span>
+  </header>
+
+  <section class="intro">
+    <p class="eyebrow">ZERO AUDIO FILES · ZERO MDCT FRAMES · PURE MATHEMATICAL WAVE EQUATIONS</p>
+    <h1>下个<span>·</span>路口<span>·</span>见</h1>
+    <p class="description">李宇春词曲 · 谭伊哲编曲。通过 AI 梅尔谱正交分解将真人歌声拆为「静态三维生理音色核 × 动态发音口型码本」，联合模态扫频鼓机、电贝斯弦振动方程、56 键十二平均律复音弦阵与 4×4 Householder FDN 混响，由纯代码在每一秒每一赫兹实时算出声波。</p>
+  </section>
+
+  <section class="player" aria-label="纯数学波方程四轨实时合成调音台">
+    <div class="mode-tabs" role="group" aria-label="数学波码档位">
+      <button data-profile="compact" aria-pressed="true">
+        <span>01</span> V5 极简解耦波码版
+        <small>李宇春三维音色场 + 256×128 发音码本（全曲人声仅 38.2 KB）</small>
+      </button>
+      <button data-profile="faithful" aria-pressed="false">
+        <span>02</span> V5 高精解耦波码版
+        <small>100fps 咬字帧率 + 三阶残差发音码本 + 12 复音和声弦阵</small>
+      </button>
+    </div>
+
+    <div class="visual-stage">
+      <div class="stage-heading">
+        <span id="engine-status"><i></i> 等待实时算波</span>
+        <span id="section-name">轻快前奏 · 滴答与木吉他</span>
+      </div>
+      <canvas id="scope" aria-label="实时合成声波示波器"></canvas>
+      <div class="lyric" id="lyric">模态滴答入场，56 键谐波弦阵与拨弦贝斯实时演算铺开。</div>
+      <p id="mode-description">零频谱帧回放，全曲四轨完全由三角递推谐波、倒谱最小相位与湍流滤波波方程实时生成。</p>
+    </div>
+
+    <div class="timeline">
+      <input id="seek" aria-label="播放位置" type="range" min="0" max="210.4" step="0.1" value="0">
+      <div class="time-labels">
+        <span id="current-time">00:00</span>
+        <span id="total-time">03:31</span>
+      </div>
+    </div>
+
+    <div class="transport">
+      <div class="primary-controls">
+        <button id="play" class="play" disabled>实时算波 <span>▶</span></button>
+        <button id="restart" class="restart" aria-label="从头开始">↺</button>
+      </div>
+      <div class="volume">
+        <label for="volume">总音量</label>
+        <input id="volume" aria-label="总音量" type="range" min="0" max="1" step="0.01" value="0.85">
+      </div>
+    </div>
+
+    <div class="mix-heading">
+      <span>四轨波函数推子 · 静音 / 独听</span>
+      <span id="calculation">逐采样波方程演算 · 48,000 Hz</span>
+    </div>
+    <div id="tracks" role="group" aria-label="四轨混音控制"></div>
+
+    <div class="disentangle-panel" aria-label="AI 发音与音色正交解耦矩阵">
+      <div class="timbre-box">
+        <h2>李宇春全局生理音色核 T_LYC(m) ⊗ 动态发音码本 P(t)</h2>
+        <p>AI 从全曲梅尔谱分离出的时不变个人声道共振曲线（仅 48 维静态常数），播放时与发音口型码本实时融合计算每一阶声带谐波振幅与最小相位。</p>
+        <canvas id="timbre-curve" aria-label="李宇春 48-Mel 静态音色核曲线"></canvas>
+      </div>
+      <div class="formula-list" id="formula-list"></div>
+    </div>
+  </section>
+
+  <section class="comparison" aria-label="体积与代码化演进对比">
+    <article>
+      <span class="metric-label">原版 320k 录音文件 <em>MP3</em></span>
+      <strong id="reference-size">9.62 <small>MB</small></strong>
+      <div class="size-bar"><i style="--size:100%"></i></div>
+      <p>原始 3 分 30 秒立体声录音体积基准</p>
+    </article>
+    <article>
+      <span class="metric-label">V5 解耦波码离线版 <em>单 HTML</em></span>
+      <strong id="compact-size">计算中</strong>
+      <div class="size-bar"><i id="compact-bar"></i></div>
+      <p id="compact-saving">含完整 UI + 四轨波方程合成器 + 全曲解耦参数</p>
+    </article>
+    <article>
+      <span class="metric-label">V5 高精解耦波码参数 <em>LZMA</em></span>
+      <strong id="faithful-size">计算中</strong>
+      <div class="size-bar"><i id="faithful-bar"></i></div>
+      <p id="faithful-saving">三阶发音码本 + 14 路模态鼓件 + 12 复音弦阵</p>
+    </article>
+  </section>
+
+  <footer>
+    <p>全工程零 MP3 / WAV 文件、零 MDCT 频谱切片回放、零神经网络黑盒权重。所有采样点均由浏览器 AudioWorklet 通过三角递推正弦谐波、64 点实倒谱最小相位、多频段湍流噪声整形、扫频模态振荡器与 4×4 Householder FDN 混响方程实时计算。</p>
+  </footer>
+  <p id="error" role="alert" hidden></p>
+</main>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

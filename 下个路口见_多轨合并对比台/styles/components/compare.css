@@ -1,0 +1,82 @@
+.combo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.combo-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  background: rgba(18, 22, 28, 0.72);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.12s ease;
+}
+
+.combo-card:hover {
+  border-color: rgba(217, 237, 137, 0.45);
+  background: rgba(26, 32, 40, 0.85);
+}
+
+.combo-card[aria-pressed="true"] {
+  border-color: #d9ed89;
+  background: rgba(217, 237, 137, 0.11);
+  box-shadow: 0 0 0 1px rgba(217, 237, 137, 0.35);
+}
+
+.combo-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.combo-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #d9ed89;
+}
+
+.combo-delta {
+  font-size: 11px;
+  color: #7ce0c3;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.combo-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f3f6fa;
+}
+
+.combo-size {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.combo-metrics {
+  font-size: 11px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 860px) {
+  .combo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .combo-grid {
+    grid-template-columns: 1fr;
+  }
+}

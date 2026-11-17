@@ -1,0 +1,139 @@
+/* Transport Bar & Sync Lyric Banner (`styles/components/transport.css`) */
+.transport-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.transport-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  background: var(--bg-panel-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 7px 13px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.btn:hover:not(:disabled) {
+  border-color: var(--border-accent);
+  background: #1f2940;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  border-color: rgba(56, 189, 248, 0.5);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.btn-emerald {
+  background: rgba(16, 185, 129, 0.16);
+  border-color: rgba(16, 185, 129, 0.45);
+  color: #34d399;
+}
+
+.clock-box {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 5px 11px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.clock-time {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent-cyan);
+}
+
+.clock-bar {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.tier-selector-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tier-select {
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.status-pill {
+  font-size: 12px;
+  color: var(--accent-amber);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.status-pill.ready {
+  color: var(--accent-emerald);
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.seek-lyric-row {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: center;
+}
+
+.seek-slider {
+  width: 100%;
+  accent-color: var(--accent-cyan);
+  cursor: pointer;
+}
+
+.lyric-banner {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: var(--bg-input);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lyric-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fde68a;
+}
+
+.active-syllable-tag {
+  font-size: 12px;
+  color: var(--accent-cyan);
+}

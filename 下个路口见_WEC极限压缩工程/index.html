@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WEC 极简播放器 · 下个路口见</title>
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+  <main class="player-card">
+    <span class="tag">WEC1 · 178.44 KB LOSSLESS PURE-CODE</span>
+    <h1 id="song-title">下个，路口，见</h1>
+    <div id="file-meta" class="meta">正在解码下个路口见_V9R2.8.wec...</div>
+
+    <div id="lyric-box" class="lyric-box">准备就绪后显示实时歌词</div>
+
+    <div class="seek-row">
+      <span id="time-cur" class="time">00:00</span>
+      <input id="seek-slider" type="range" min="0" max="210.37" step="0.05" value="0" disabled />
+      <span id="time-dur" class="time">03:30</span>
+    </div>
+
+    <div class="controls">
+      <button id="btn-play" class="primary" disabled>▶ 播放</button>
+      <button id="btn-wav" disabled>⬇ 导出 WAV</button>
+    </div>
+
+    <div id="status-text" class="status">正在请求解码 .wec 容器...</div>
+  </main>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

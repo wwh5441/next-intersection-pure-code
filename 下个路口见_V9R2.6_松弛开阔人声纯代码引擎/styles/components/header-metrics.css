@@ -1,0 +1,59 @@
+/* Header & Metrics Strip (`styles/components/header-metrics.css`) */
+.studio-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.brand-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+}
+
+.studio-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.studio-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.metric-chip {
+  background: var(--bg-panel-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 9px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metric-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.metric-value {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent-emerald);
+}
+
+.metric-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+}

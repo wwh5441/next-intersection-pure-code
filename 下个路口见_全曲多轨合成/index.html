@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>下个，路口，见 · 全曲八轨（人声五轨 + 伴奏三轨）纯代码合成台</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./styles/tokens.css">
+  <link rel="stylesheet" href="./styles/layout.css">
+  <link rel="stylesheet" href="./styles/components/player.css">
+  <link rel="stylesheet" href="./styles/components/presets.css">
+  <link rel="stylesheet" href="./styles/components/multitrack.css">
+  <link rel="stylesheet" href="./styles/components/inspector.css">
+</head>
+<body>
+<main class="studio">
+  <header class="masthead">
+    <span class="brand"><i></i> FULL-SONG 8-TRACK WAVE-CODE STUDIO</span>
+    <span class="edition">5 VOCAL SUB-TRACKS + 3 ACCOMPANIMENT STEMS · ZERO EXTERNAL AUDIO FILES</span>
+  </header>
+
+  <section class="intro">
+    <p class="eyebrow">COMPLETE SONG EDITION · VOCALS (01–05) + BASS / DRUMS / STEREO ACCOMPANIMENT (06–08)</p>
+    <h1>下个<span>·</span>路口<span>·</span>见<span>·</span>全曲八轨合成台</h1>
+    <p class="description">完整合入<b>人声五轨</b>（低频基音谐波、中高频谐波、清辅音瞬态与噪声包络、双声道叠唱伴唱、FDN 算法混响）与<b>伴奏三轨</b>（贝斯低音、鼓组瞬态与镲片、吉他合成器立体声伴奏）。支持一键切换<b>全曲混音 / 纯享人声清唱 / 纯伴奏 KTV</b>，以及任意单轨独听与静音。</p>
+  </section>
+
+  <section class="player" aria-label="全曲八轨纯代码调音台">
+    <div class="mode-tabs" role="group" aria-label="编码码率档位">
+      <button data-profile="compact" aria-pressed="true">
+        <span>01</span> 全曲精粹八轨版
+        <small>人声五轨 (~573 KB) + 伴奏三轨 · 混合变换系数与参数包络合成</small>
+      </button>
+      <button data-profile="faithful" aria-pressed="false">
+        <span>02</span> 全曲高精八轨版
+        <small>更高阶量化级数与更宽变换频带 · 提升谐波与立体声伴奏保真度</small>
+      </button>
+    </div>
+
+    <div class="visual-stage">
+      <div class="stage-heading">
+        <span id="engine-status"><i></i> 已就绪 · 全曲完整版（00:00 前奏起播）</span>
+        <span id="section-name">前奏 · 原声吉他与轻快合成器律动入场</span>
+      </div>
+      <canvas id="scope" aria-label="实时全曲合成波形示波器"></canvas>
+      <div class="lyric" id="lyric">点击「播放全曲 ▶」从头试听完整版，或点快捷按钮直达主唱 / 副歌</div>
+      <p id="mode-description">八条独立音轨全部由浏览器 AudioWorklet 在 48,000 Hz 实时解码与混合重建，无外部 MP3/WAV 文件。</p>
+    </div>
+
+    <div class="timeline">
+      <input id="seek" aria-label="播放位置" type="range" min="0" max="210.4" step="0.1" value="0">
+      <div class="time-labels">
+        <span id="current-time">00:00</span>
+        <span id="total-time">03:31</span>
+      </div>
+    </div>
+
+    <div class="transport">
+      <div class="primary-controls">
+        <button id="play" class="play" disabled>播放全曲 <span>▶</span></button>
+        <button id="jump-intro" class="jump-btn" type="button">前奏起点 (00:00)</button>
+        <button id="jump-verse" class="jump-btn" type="button">主唱起唱 (00:23)</button>
+        <button id="jump-chorus" class="jump-btn" type="button">副歌 DI DI DA (01:02)</button>
+      </div>
+      <div class="volume">
+        <label for="volume">总输出音量</label>
+        <input id="volume" aria-label="总输出音量" type="range" min="0" max="1.2" step="0.01" value="0.9">
+      </div>
+    </div>
+
+    <div class="preset-bar">
+      <span class="preset-label">快速编组切换：</span>
+      <div id="presets" role="group" aria-label="八轨编组预设"></div>
+    </div>
+
+    <div class="mix-heading">
+      <span>全曲八轨独立推子（01–05 人声组 + 06–08 伴奏组 · 可任意独听 / 静音）</span>
+      <span id="calculation">实时混音合成 · 48,000 Hz</span>
+    </div>
+    <div id="tracks" role="group" aria-label="八轨混音控制"></div>
+
+    <div class="disentangle-panel" aria-label="频谱统计分布与八轨合成公式">
+      <div class="timbre-box">
+        <h2>主唱 64-Mel 频谱均值曲线 × 动态波动带 × 高频噪声谱分布</h2>
+        <p>绿线为主唱谐波段均值包络，青色带为帧间发音动态标准差范围，蓝线为辅音与高频段统计分布。</p>
+        <canvas id="timbre-curve" aria-label="64-Mel 频谱统计曲线"></canvas>
+      </div>
+      <div class="formula-list" id="formula-list"></div>
+    </div>
+  </section>
+
+  <section class="comparison" aria-label="全曲体积与客观信噪比统计">
+    <article>
+      <span class="metric-label">48kHz/16bit 全曲无损基准 <em>WAV</em></span>
+      <strong id="wav-vocal-size">40.39 <small>MB</small></strong>
+      <div class="size-bar"><i style="--size:100%"></i></div>
+      <p>原曲参考 MP3 为 9.62 MB · 无损 PCM 为 40.39 MB</p>
+    </article>
+    <article>
+      <span class="metric-label">全曲精粹八轨数据流 <em>LZMA</em></span>
+      <strong id="compact-size">计算中</strong>
+      <div class="size-bar"><i id="compact-bar"></i></div>
+      <p id="compact-saving">人声五轨 + 伴奏三轨混合编码</p>
+    </article>
+    <article>
+      <span class="metric-label">全曲高精八轨数据流 <em>LZMA</em></span>
+      <strong id="faithful-size">计算中</strong>
+      <div class="size-bar"><i id="faithful-bar"></i></div>
+      <p id="faithful-saving">高阶量化 + 更宽频带八轨数据流</p>
+    </article>
+  </section>
+
+  <footer>
+    <p>全工程不含外部 MP3 / WAV 音频文件：01–05 为人声频段/伴唱/FDN混响五轨，06–08 为贝斯/鼓组/立体声伴奏三轨，均在浏览器 AudioWorklet 中实时解码合成。</p>
+  </footer>
+  <p id="error" role="alert" hidden></p>
+</main>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

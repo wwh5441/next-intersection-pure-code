@@ -1,0 +1,39 @@
+/* V9R3 High-Fidelity Pure Math + Code + Dictionary Studio — Design Tokens (`styles/tokens.css`) */
+:root {
+  --bg-page: #f4f1ea;
+  --bg-surface: #ffffff;
+  --bg-subtle: #ebe6da;
+  --bg-muted: #f9f7f2;
+  --bg-canvas: #12151c;
+  --bg-code: #161922;
+
+  --ink-primary: #15171c;
+  --ink-secondary: #454b57;
+  --ink-muted: #707786;
+  --ink-on-dark: #f3f0e8;
+
+  --border-light: #ddd6c7;
+  --border-strong: #bfb5a0;
+
+  --accent-vocal: #d64535;
+  --accent-vocal-soft: rgba(214, 69, 53, 0.11);
+  --accent-harm: #7c3aed;
+  --accent-harm-soft: rgba(124, 58, 237, 0.11);
+  --accent-drum: #c58424;
+  --accent-drum-soft: rgba(197, 132, 36, 0.12);
+  --accent-bass: #257a50;
+  --accent-bass-soft: rgba(37, 122, 80, 0.11);
+  --accent-band: #2563eb;
+  --accent-band-soft: rgba(37, 99, 235, 0.11);
+  --accent-ok: #15803d;
+  --accent-ok-soft: rgba(21, 128, 61, 0.12);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  --shadow-card: 0 2px 12px rgba(21, 23, 28, 0.05);
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
+  --font-mono: "SF Mono", "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
+}

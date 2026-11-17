@@ -1,0 +1,50 @@
+/* V9R1 Studio — Dual-Layer Score & 86-Bar Motif Canvas (`visualizer.css`) */
+.canvas-wrap {
+  position: relative;
+  background: var(--bg-canvas);
+  border-radius: var(--radius-md);
+  border: 1px solid #2b303c;
+  overflow: hidden;
+}
+
+.score-motif-canvas {
+  display: block;
+  width: 100%;
+  height: 236px;
+  cursor: pointer;
+}
+
+.canvas-legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  font-size: 11.5px;
+  color: var(--ink-secondary);
+  font-family: var(--font-mono);
+}
+
+.legend-items {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.dot-vocal { background: #e85d3f; }
+.dot-coart { background: #fbbf24; }
+.dot-drum  { background: #d69e2e; }
+.dot-bass  { background: #38a169; }
+.dot-harm  { background: #63b3ed; }
+.dot-res   { background: #f687b3; }

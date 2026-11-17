@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>下个，路口，见 · V4 心理声学纯代码四轨合成</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./styles/tokens.css">
+  <link rel="stylesheet" href="./styles/layout.css">
+  <link rel="stylesheet" href="./styles/components/player.css">
+  <link rel="stylesheet" href="./styles/components/multitrack.css">
+  <link rel="stylesheet" href="./styles/components/parameters.css">
+</head>
+<body>
+<main class="studio">
+  <header class="masthead">
+    <span class="brand"><i></i> CPU AUDIO LAB</span>
+    <span class="edition">V4 PSYCHOACOUSTIC MDCT + PS/PNS + DRUM RESIDUAL + BASE122</span>
+  </header>
+
+  <section class="intro">
+    <p class="eyebrow">ZERO AUDIO FILES · ADAPTIVE 2048/512 MDCT · 24-BARK MASKING</p>
+    <h1>下个<span>·</span>路口<span>·</span>见</h1>
+    <p class="description">李宇春词曲 · 谭伊哲编曲。零音频文件与模型权重，采用自适应长短窗切换、24-Bark 临界频带掩蔽、高频参数立体声折叠、98 BPM 鼓组闭环原型残差与 UTF-8 Base122 编码，由浏览器 AudioWorklet 实时合成。</p>
+  </section>
+
+  <section class="player" aria-label="纯 CPU 四轨实时合成调音台">
+    <div class="mode-tabs" role="group" aria-label="频谱参数档位">
+      <button data-profile="compact" aria-pressed="true">
+        <span>01</span> V4 紧凑版
+        <small>人声共振峰 47 阶高精度 + 参数立体声 + 鼓闭环残差</small>
+      </button>
+      <button data-profile="faithful" aria-pressed="false">
+        <span>02</span> V4 保真版
+        <small>63 阶全频段精细泛音保留 + 32kHz 瞬态采样上限</small>
+      </button>
+    </div>
+
+    <div class="visual-stage">
+      <div class="stage-heading">
+        <span id="engine-status"><i></i> 等待播放</span>
+        <span id="section-name">轻快前奏 · 滴答与木吉他</span>
+      </div>
+      <canvas id="scope" aria-label="实时合成声音示波器"></canvas>
+      <div class="lyric" id="lyric">秒针滴答入场，木吉他与贝斯轻快铺开。</div>
+      <p id="mode-description">仅含纯文本代码与心理声学稀疏参数，边算边播。</p>
+    </div>
+
+    <div class="timeline">
+      <input id="seek" aria-label="播放位置" type="range" min="0" max="210.4" step="0.1" value="0">
+      <div class="time-labels">
+        <span id="current-time">00:00</span>
+        <span id="total-time">03:31</span>
+      </div>
+    </div>
+
+    <div class="transport">
+      <div class="primary-controls">
+        <button id="play" class="play" disabled>开始计算 <span>▶</span></button>
+        <button id="restart" class="restart" aria-label="从头开始">↺</button>
+      </div>
+      <div class="volume">
+        <label for="volume">总音量</label>
+        <input id="volume" aria-label="总音量" type="range" min="0" max="1" step="0.01" value="0.85">
+      </div>
+    </div>
+
+    <div class="mix-heading">
+      <span>四轨独立推子 · 静音 / 独听</span>
+      <span id="calculation">逐块计算 · 48,000 Hz</span>
+    </div>
+    <div id="tracks" role="group" aria-label="四轨混音控制"></div>
+  </section>
+
+  <section class="comparison" aria-label="体积与压缩对比">
+    <article>
+      <span class="metric-label">原版 320k 音频文件 <em>MP3</em></span>
+      <strong id="reference-size">9.62 <small>MB</small></strong>
+      <div class="size-bar"><i style="--size:100%"></i></div>
+      <p>原始 3 分 30 秒立体声 MP3 参考体积</p>
+    </article>
+    <article>
+      <span class="metric-label">V4 紧凑版自包含 <em>单 HTML</em></span>
+      <strong id="compact-size">计算中</strong>
+      <div class="size-bar"><i id="compact-bar"></i></div>
+      <p id="compact-saving">Base122 单文件直开，含全部代码与四轨参数</p>
+    </article>
+    <article>
+      <span class="metric-label">V4 保真版四轨参数 <em>LZMA</em></span>
+      <strong id="faithful-size">计算中</strong>
+      <div class="size-bar"><i id="faithful-bar"></i></div>
+      <p id="faithful-saving">63 阶高保真量化 + 闭环鼓残差与参数立体声</p>
+    </article>
+  </section>
+
+  <footer>
+    <p>全工程零 MP3 / WAV 音频文件、零 AI 模型权重。通过 5 模态 Princen-Bradley 自适应长短窗（2048 / 4×512）集中稳态谐波并抑制瞬态预回声，结合 24-Bark 同时掩蔽曲线、高频 CELT 频谱折叠参数立体声、98.0 BPM 鼓组小节闭环残差与 Base122 无套娃内嵌封装。</p>
+  </footer>
+  <p id="error" role="alert" hidden></p>
+</main>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

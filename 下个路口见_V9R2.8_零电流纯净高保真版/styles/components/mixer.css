@@ -1,0 +1,100 @@
+/* 11-Track Orthogonal Stem Mixer (`styles/components/mixer.css`) */
+.layer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.layer-row {
+  display: grid;
+  grid-template-columns: minmax(175px, 1.3fr) auto 95px 48px;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 9px;
+  background: var(--bg-panel-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.layer-meta {
+  min-width: 0;
+}
+
+.layer-name-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.layer-swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.layer-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.layer-sub {
+  display: block;
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ms-btns {
+  display: flex;
+  gap: 4px;
+}
+
+.ms-btn {
+  width: 24px;
+  height: 22px;
+  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ms-btn.active-mute {
+  background: rgba(244, 63, 94, 0.22);
+  border-color: var(--accent-coral);
+  color: #fda4af;
+}
+
+.ms-btn.active-solo {
+  background: rgba(245, 158, 11, 0.24);
+  border-color: var(--accent-amber);
+  color: #fde68a;
+}
+
+.gain-slider {
+  width: 100%;
+  accent-color: var(--accent-cyan);
+  cursor: pointer;
+}
+
+.meter-bar-bg {
+  height: 6px;
+  background: #090d16;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.meter-bar-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.06s linear;
+}

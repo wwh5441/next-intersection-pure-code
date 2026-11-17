@@ -1,0 +1,118 @@
+.transport-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.transport-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+}
+
+.transport-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.play-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 128px;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: none;
+  background: var(--ink-primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.15s ease;
+}
+
+.play-btn:hover:not(:disabled) {
+  background: var(--accent-harm);
+  transform: translateY(-1px);
+}
+
+.play-btn:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.time-readout {
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  color: var(--ink-secondary);
+}
+
+.profile-switcher {
+  display: inline-flex;
+  background: var(--bg-subtle);
+  padding: 3px;
+  border-radius: 999px;
+  gap: 4px;
+}
+
+.profile-tab {
+  border: none;
+  background: transparent;
+  padding: 6px 13px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.profile-tab.active {
+  background: var(--bg-panel);
+  color: var(--ink-primary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.09);
+}
+
+.scrubber-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.scrubber-slider {
+  width: 100%;
+  accent-color: var(--accent-harm);
+  cursor: pointer;
+  height: 6px;
+}
+
+.lyric-stage {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-md);
+}
+
+.lyric-current {
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--ink-primary);
+}
+
+.active-event-pill {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--bg-code);
+  color: #f8f8f2;
+  white-space: nowrap;
+}

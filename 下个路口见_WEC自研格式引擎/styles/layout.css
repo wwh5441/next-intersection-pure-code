@@ -1,0 +1,72 @@
+.studio-shell {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 22px 24px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 18px 20px;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.title-block h1 {
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.title-block p {
+  font-size: 13px;
+  color: var(--ink-secondary);
+  margin-top: 4px;
+}
+
+.badge-strip {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.metric-pill {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-hairline);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--ink-primary);
+}
+
+.metric-pill strong {
+  color: var(--accent-vocal);
+}
+
+.metric-pill.band strong {
+  color: var(--accent-band);
+}
+
+.mixer-two-col {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 16px;
+}
+
+@media (max-width: 1120px) {
+  .mixer-two-col {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

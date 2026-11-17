@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>下个，路口，见 · 事件音节波码引擎 (V8.5)</title>
+    <link rel="stylesheet" href="./styles/tokens.css" />
+    <link rel="stylesheet" href="./styles/layout.css" />
+    <link rel="stylesheet" href="./styles/components/transport.css" />
+    <link rel="stylesheet" href="./styles/components/event-ribbon.css" />
+    <link rel="stylesheet" href="./styles/components/layer-mixer.css" />
+    <link rel="stylesheet" href="./styles/components/syllable-atlas.css" />
+  </head>
+  <body>
+    <main class="studio-shell">
+      <header class="studio-header">
+        <div>
+          <span class="brand-eyebrow">V8.5 FULL MIX · DAC COARTICULATED VOCAL (8-TRACK) × INSTRUMENTAL STEMS (3-TRACK)</span>
+          <h1 class="studio-title">李宇春《下个，路口，见》· 全曲十一轨事件波码工作台 (V8.5)</h1>
+          <p class="studio-subtitle">
+            跨字逆向预期协同连音（x-i-a--y-i--g-e--l-u--k-ou--j-ian）+ 八轨人声物理解剖 + 三轨器乐伴奏（贝斯 / 鼓组 / 吉他合成器）
+          </p>
+        </div>
+      </header>
+
+      <section id="metrics-strip" class="metrics-strip"></section>
+
+      <section id="transport-panel" class="panel-card transport-card"></section>
+
+      <section class="studio-grid">
+        <div class="panel-card">
+          <div class="panel-head">
+            <h2 class="panel-title">发声事件与连续基音轨迹谱 (点击任意音节块即刻跳转)</h2>
+            <span class="panel-badge">零帧切片 · 无声区间 0 Byte</span>
+          </div>
+          <div class="ribbon-canvas-wrap">
+            <canvas id="pitch-event-canvas" class="ribbon-canvas"></canvas>
+          </div>
+          <div class="ribbon-legend">
+            <span class="legend-item">
+              <span class="legend-swatch" style="background: #2a9d8f"></span>声母瞬态咬字区 (Zone A)
+            </span>
+            <span class="legend-item">
+              <span class="legend-swatch" style="background: #e85d3f"></span>韵母谐波演化区 (Zone B)
+            </span>
+            <span class="legend-item">
+              <span class="legend-swatch" style="background: #ffd166"></span>连续样条基频 f₀(t)
+            </span>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-head">
+            <h2 class="panel-title">十一轨全曲混音台 (8 轨人声解剖 + 3 轨伴奏 · 支持独立 Solo / Mute)</h2>
+            <span class="panel-badge">48 kHz 11 轨双通道浮点</span>
+          </div>
+          <div id="layer-mixer-panel" class="layer-list"></div>
+        </div>
+      </section>
+
+      <section class="panel-card">
+        <div class="panel-head">
+          <h2 class="panel-title">全曲去重共享音节声韵字典 (97 个音节原型驱动全曲 309 次演唱)</h2>
+          <span class="panel-badge">VGA8 Syllable Atlas</span>
+        </div>
+        <div id="syllable-atlas-panel"></div>
+      </section>
+    </main>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+/* Design Tokens (`styles/tokens.css`) */
+:root {
+  --bg-canvas: #0b0f17;
+  --bg-panel: #121826;
+  --bg-panel-elevated: #182032;
+  --bg-input: #0e1420;
+  --border-subtle: rgba(148, 163, 184, 0.14);
+  --border-accent: rgba(56, 189, 248, 0.38);
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --accent-cyan: #38bdf8;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-coral: #f43f5e;
+  --accent-violet: #8b5cf6;
+
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", sans-serif;
+  --font-mono: "SF Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
+}

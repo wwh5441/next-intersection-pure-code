@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
+    <title>下个，路口，见 · 纯净去残事件音节波码引擎 (V8.3)</title>
+    <link rel="stylesheet" href="./styles/tokens.css" />
+    <link rel="stylesheet" href="./styles/layout.css" />
+    <link rel="stylesheet" href="./styles/components/transport.css" />
+    <link rel="stylesheet" href="./styles/components/event-ribbon.css" />
+    <link rel="stylesheet" href="./styles/components/layer-mixer.css" />
+    <link rel="stylesheet" href="./styles/components/syllable-atlas.css" />
+  </head>
+  <body>
+    <main class="studio-shell">
+      <header class="studio-header">
+        <div>
+          <span class="brand-eyebrow">V8.3 · ZERO-RESIDUE DE-BLEED &amp; 48KHZ CONTINUOUS PHASOR GENESIS</span>
+          <h1 class="studio-title">李宇春《下个，路口，见》· 纯净去残事件音节衍生工作台 (V8.3)</h1>
+          <p class="studio-subtitle">
+            根除杂音与多余数据残留：跨轨串音消除 × 倒谱平滑去咕噜 × 元音 &lt;5kHz 零底嘶铁律 × LRC 滞后对齐清零假音节 × 48kHz 全曲连续正交相位生波
+          </p>
+        </div>
+      </header>
+
+      <section id="metrics-strip" class="metrics-strip"></section>
+
+      <section id="transport-panel" class="panel-card transport-card"></section>
+
+      <section class="studio-grid">
+        <div class="panel-card">
+          <div class="panel-head">
+            <h2 class="panel-title">纯净发声事件与 5 音分连续基音轨迹谱 (点击任意音节即刻跳转)</h2>
+            <span class="panel-badge">假音节残片 0 个 · 无声段 0 Byte</span>
+          </div>
+          <div class="ribbon-canvas-wrap">
+            <canvas id="pitch-event-canvas" class="ribbon-canvas"></canvas>
+          </div>
+          <div class="ribbon-legend">
+            <span class="legend-item">
+              <span class="legend-swatch" style="background: #2a9d8f"></span>声母瞬态咬字区 (Zone A)
+            </span>
+            <span class="legend-item">
+              <span class="legend-swatch" style="background: #e85d3f"></span>纯净声道谐波区 (Zone B)
+            </span>
+            <span class="legend-item">
+              <span class="legend-swatch" style="background: #ffd166"></span>5 音分样条连续基频 f₀(t)
+            </span>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-head">
+            <h2 class="panel-title">四层纯净声学合成混音台 (可逐层 Solo 检验底噪纯净度)</h2>
+            <span class="panel-badge">48 kHz 原生无混叠</span>
+          </div>
+          <div id="layer-mixer-panel" class="layer-list"></div>
+        </div>
+      </section>
+
+      <section class="panel-card">
+        <div class="panel-head">
+          <h2 class="panel-title">去残共享音节声韵字典 (V8.3 锚点增量编码)</h2>
+          <span class="panel-badge">V8.3 Clean Syllable Atlas</span>
+        </div>
+        <div id="syllable-atlas-panel"></div>
+      </section>
+    </main>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

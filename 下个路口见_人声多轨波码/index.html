@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>下个，路口，见 · 纯人声五轨高保真数学波码解剖台</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./styles/tokens.css">
+  <link rel="stylesheet" href="./styles/layout.css">
+  <link rel="stylesheet" href="./styles/components/player.css">
+  <link rel="stylesheet" href="./styles/components/presets.css">
+  <link rel="stylesheet" href="./styles/components/multitrack.css">
+  <link rel="stylesheet" href="./styles/components/inspector.css">
+</head>
+<body>
+<main class="studio">
+  <header class="masthead">
+    <span class="brand"><i></i> PURE VOCAL WAVE-CODE LAB</span>
+    <span class="edition">V6 HIGH-FIDELITY 5-TRACK VOCAL ANATOMY · ZERO ACCOMPANIMENT</span>
+  </header>
+
+  <section class="intro">
+    <p class="eyebrow">100% ISOLATED HUMAN VOICE · 5 ADDITIVE VOCAL SUB-TRACKS · TRUE-PHASE COSINE WAVE SYNTHESIS</p>
+    <h1>下个<span>·</span>路口<span>·</span>见<span>·</span>纯人声五轨解剖台</h1>
+    <p class="description">完全剥离伴奏干扰，将李宇春 48kHz 立体声人声按声学物理拆为五条严格相加守恒的纯代码波码子轨：<b>01 声带基音与胸腔音色</b> + <b>02 元音口型共振峰</b> + <b>03 唇齿清辅音与空气</b> + <b>04 副歌双声道叠唱和声</b> + <b>05 录音室人声混响</b>。支持双档位切换与单轨独听对比。</p>
+  </section>
+
+  <section class="player" aria-label="纯人声五轨高保真数学波码调音台">
+    <div class="mode-tabs" role="group" aria-label="高保真波码档位">
+      <button data-profile="compact" aria-pressed="true">
+        <span>01</span> V7 超精简高保真五轨版
+        <small>主唱真相位余弦波 + 4带8ms齿音空气 + 8阶FDN混响（~550 KB 级 · 缩小 >98.5%）</small>
+      </button>
+      <button data-profile="faithful" aria-pressed="false">
+        <span>02</span> V7 母带级高精五轨版
+        <small>88 级高精谐波 + 超宽真相位咬字 + 20kHz 空气 + FDN 混响（~1 MB 母带听感）</small>
+      </button>
+    </div>
+
+    <div class="visual-stage">
+      <div class="stage-heading">
+        <span id="engine-status"><i></i> 已就绪 · 默认定位 00:22.6 主唱起唱点</span>
+        <span id="section-name">第一主歌 · 刚下的地铁 / 东京与巴黎</span>
+      </div>
+      <canvas id="scope" aria-label="实时人声合成波形示波器"></canvas>
+      <div class="lyric" id="lyric">点击「单独听人声 ▶」立即从 00:23 第一句主唱开始试听</div>
+      <p id="mode-description">五条人声子轨全部保留真实声门与唇齿瞬态相位，任意静音/独听均可无损闭合还原完整立体声人声。</p>
+    </div>
+
+    <div class="timeline">
+      <input id="seek" aria-label="播放位置" type="range" min="0" max="210.4" step="0.1" value="22.6">
+      <div class="time-labels">
+        <span id="current-time">00:22</span>
+        <span id="total-time">03:31</span>
+      </div>
+    </div>
+
+    <div class="transport">
+      <div class="primary-controls">
+        <button id="play" class="play" disabled>单独听人声 <span>▶</span></button>
+        <button id="jump-verse" class="jump-btn" type="button">跳至主唱起唱 (00:23)</button>
+        <button id="jump-chorus" class="jump-btn" type="button">跳至副歌叠唱 DI DI DA (01:02)</button>
+      </div>
+      <div class="volume">
+        <label for="volume">人声总音量</label>
+        <input id="volume" aria-label="人声总音量" type="range" min="0" max="1.2" step="0.01" value="0.9">
+      </div>
+    </div>
+
+    <div class="preset-bar">
+      <span class="preset-label">一键听感解剖：</span>
+      <div id="presets" role="group" aria-label="人声解剖预设"></div>
+    </div>
+
+    <div class="mix-heading">
+      <span>人声五轨独立推子 · 任意静音 / 独听解剖发音与音色</span>
+      <span id="calculation">逐采样波方程演算 · 48,000 Hz</span>
+    </div>
+    <div id="tracks" role="group" aria-label="五轨人声混音控制"></div>
+
+    <div class="disentangle-panel" aria-label="人声音色与咬字频谱解剖面板">
+      <div class="timbre-box">
+        <h2>李宇春 64-Mel 生理音色核 × 咬字动态带 × 唇齿气声分布</h2>
+        <p>实线绿为时不变声道生理音色曲线，青色包络带为元音口型动态摆幅，蓝线为清辅音与呼吸高频能量分布。</p>
+        <canvas id="timbre-curve" aria-label="64-Mel 音色与发音分布曲线"></canvas>
+      </div>
+      <div class="formula-list" id="formula-list"></div>
+    </div>
+  </section>
+
+  <section class="comparison" aria-label="48kHz 无损人声体积与信噪比对比">
+    <article>
+      <span class="metric-label">48kHz/16bit 立体声无损人声基准 <em>WAV</em></span>
+      <strong id="wav-vocal-size">40.39 <small>MB</small></strong>
+      <div class="size-bar"><i style="--size:100%"></i></div>
+      <p>3 分 30 秒 48kHz 双声道无损 PCM 人声体积基准</p>
+    </article>
+    <article>
+      <span class="metric-label">V7 超精简五轨高保真波码 <em>LZMA</em></span>
+      <strong id="compact-size">计算中</strong>
+      <div class="size-bar"><i id="compact-bar"></i></div>
+      <p id="compact-saving">真相位主唱 + 4带空气 + FDN混响</p>
+    </article>
+    <article>
+      <span class="metric-label">V7 母带级五轨高精波码 <em>LZMA</em></span>
+      <strong id="faithful-size">计算中</strong>
+      <div class="size-bar"><i id="faithful-bar"></i></div>
+      <p id="faithful-saving">88 级高精谐波 + 20kHz 空气 + FDN混响</p>
+    </article>
+  </section>
+
+  <footer>
+    <p>全工程零 MP3 / WAV 音频文件、零伴奏串音、零折频相位伪影。五条人声子轨（声带胸腔核、元音共振峰、唇齿清辅音、双声道叠唱和声、立体声人声混响）全部由浏览器 AudioWorklet 按正交局部余弦波方程在 48,000 Hz 实时合成。</p>
+  </footer>
+  <p id="error" role="alert" hidden></p>
+</main>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+:root {
+  color-scheme: dark;
+  --bg: #111715;
+  --panel: #19201d;
+  --panel-deep: #131b17;
+  --text: #e9eddf;
+  --muted: #99a497;
+  --faint: #6c7c6e;
+  --line: #303b32;
+  --accent: #d9ed89;
+  --cyan: #7ce0c3;
+  --gold: #e6c98b;
+  --radius: 20px;
+  --font: ui-sans-serif, system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button,
+a,
+input {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  cursor: pointer;
+  color: inherit;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+input[type="range"] {
+  accent-color: var(--accent);
+  cursor: pointer;
+}

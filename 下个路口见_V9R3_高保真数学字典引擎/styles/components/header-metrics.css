@@ -1,0 +1,102 @@
+/* Header & Ground-Truth SNR Benchmark Matrix (`styles/components/header-metrics.css`) */
+.hero-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--accent-ok-soft);
+  color: var(--accent-ok);
+  margin-bottom: 6px;
+}
+
+.hero-title {
+  margin: 0 0 4px;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.hero-desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-secondary);
+  max-width: 820px;
+}
+
+.kpi-strip {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.kpi-box {
+  background: var(--bg-muted);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  min-width: 126px;
+}
+
+.kpi-label {
+  font-size: 11px;
+  color: var(--ink-muted);
+}
+
+.kpi-val {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink-primary);
+}
+
+.kpi-val.accent {
+  color: var(--accent-ok);
+}
+
+.snr-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+  gap: 8px;
+}
+
+.snr-card {
+  background: var(--bg-muted);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+
+.snr-card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  margin-bottom: 4px;
+}
+
+.snr-card-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-secondary);
+}
+
+.snr-gain-pill {
+  color: var(--accent-ok);
+  font-weight: 700;
+}

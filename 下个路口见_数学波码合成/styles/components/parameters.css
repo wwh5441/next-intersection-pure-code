@@ -1,0 +1,123 @@
+.mode-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  padding: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.mode-tabs button {
+  border: 1px solid transparent;
+  background: transparent;
+  text-align: left;
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.mode-tabs button > span {
+  font: 10px var(--mono);
+  color: var(--faint);
+  margin-right: 8px;
+}
+
+.mode-tabs small {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin: 6px 0 0 26px;
+  font-weight: 400;
+}
+
+.mode-tabs button[aria-pressed="true"] {
+  background: #d9ed8910;
+  border-color: #d9ed8940;
+  color: var(--accent);
+  box-shadow: inset 0 -1px #d9ed8915;
+}
+
+.mode-tabs button[aria-pressed="true"] > span {
+  color: var(--accent);
+}
+
+.mode-tabs button:hover:not(:disabled) {
+  background: #ffffff08;
+}
+
+.metric-label {
+  font-size: 11px;
+  color: var(--muted);
+  display: block;
+  min-height: 18px;
+}
+
+.metric-label em {
+  font: 9px var(--mono);
+  padding: 2px 4px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  margin-left: 5px;
+}
+
+.comparison strong {
+  font: 500 32px var(--mono);
+  display: block;
+  margin: 10px 0 13px;
+  letter-spacing: -1px;
+}
+
+.comparison strong small {
+  font-size: 14px;
+  color: var(--muted);
+  letter-spacing: 0;
+}
+
+.comparison article:not(:first-child) strong {
+  color: var(--accent);
+}
+
+.size-bar {
+  height: 4px;
+  background: #263128;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.size-bar i {
+  display: block;
+  width: var(--size, 1%);
+  min-width: 4px;
+  height: 100%;
+  background: var(--gold);
+}
+
+.comparison article:not(:first-child) .size-bar i {
+  background: var(--accent);
+}
+
+.comparison p {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--faint);
+  margin: 11px 0 0;
+}
+
+@media (max-width: 650px) {
+  .mode-tabs {
+    gap: 4px;
+    padding: 5px;
+  }
+  .mode-tabs button {
+    padding: 11px 10px;
+    font-size: 12px;
+  }
+  .mode-tabs small {
+    font-size: 9px;
+    line-height: 1.6;
+    margin-left: 0;
+  }
+  .comparison strong {
+    font-size: 25px;
+  }
+}
