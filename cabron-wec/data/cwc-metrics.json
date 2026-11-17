@@ -1,0 +1,21 @@
+{
+  "codec": "CabronWEC CWC-4X",
+  "sampleRate": 44100,
+  "durationSec": 210.373,
+  "totalFrames": 18122,
+  "totalSamples": 9277464,
+  "mp3Bytes": 9620866,
+  "pcmWavBytes": 37109900,
+  "cwcRawBytes": 7059651,
+  "cwcGzipBytes": 4382044,
+  "compressionRatioVsWav": 8.47,
+  "compressionRatioVsMp3": 2.2,
+  "snrLeftDb": 15.7,
+  "snrRightDb": 16.12,
+  "avg24BarkSnrDb": 32.01,
+  "encodeTimeMs": 1997.3,
+  "fullDecodeTimeMs": 2080,
+  "realtimeSpeedupX": 101.1,
+  "chunkCount": 8,
+  "firstChunkGzipBytes": 532488
+}

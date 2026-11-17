@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CabronWEC (CWC) · 纯代码流式声学合成工作台</title>
+  <meta name="description" content="CabronWEC (CWC-4X) 100% 纯代码 MDCT-TDAC + 24-Bark PNS AudioWorklet 实时流式音乐合成工作台，支持 5 层正交声学分轨与原版母带 A/B 对比。" />
+  <meta property="og:title" content="CabronWEC (CWC) · 纯代码流式声学合成工作台" />
+  <meta property="og:description" content="44.1kHz AudioWorklet 实时流式纯数学合成引擎，2.20× 小于 320kbps MP3，32.01 dB 24-Bark 临界频带保真度。" />
+  <link rel="stylesheet" href="/styles/cwc.css" />
+</head>
+<body data-state="initializing" data-source="cwc">
+  <!-- Strict 3-Zone Top Bar Contract -->
+  <header class="cwc-topbar">
+    <a href="#console" class="cwc-brand">CabronWEC</a>
+    <nav class="cwc-nav" aria-label="Workspace navigation">
+      <button type="button" class="cwc-nav-link active" data-nav="console">Studio Console</button>
+      <button type="button" class="cwc-nav-link" data-nav="stems">Stem Matrix</button>
+      <button type="button" class="cwc-nav-link" data-nav="equations">Math &amp; Code</button>
+      <button type="button" class="cwc-nav-link" data-nav="lyrics">Cue Sheet</button>
+    </nav>
+    <button type="button" id="btn-export-wav" class="cwc-primary-cta">Export WAV</button>
+  </header>
+
+  <main class="cwc-shell" id="console">
+    <!-- Transport & A/B Source Ribbon -->
+    <section class="cwc-transport-bar" aria-label="Transport and Engine Status">
+      <div class="cwc-track-info">
+        <h1 class="cwc-track-title">下个，路口，见 · 李宇春</h1>
+        <div class="cwc-track-meta">
+          <span>CabronWEC CWC-4X</span>
+          <span aria-hidden="true">·</span>
+          <span class="tabular">44,100 Hz Stereo</span>
+          <span aria-hidden="true">·</span>
+          <span class="tabular">98.0 BPM · 86 Bars</span>
+          <span aria-hidden="true">·</span>
+          <span id="meta-stream-status" class="tabular">Initializing Chunk 0</span>
+        </div>
+      </div>
+
+      <div class="cwc-transport-controls">
+        <button type="button" id="btn-play-toggle" class="cwc-play-btn" aria-pressed="false" disabled>
+          Loading
+        </button>
+
+        <div class="cwc-time-readout tabular" aria-label="Playback position">
+          <span id="readout-cur" class="cwc-time-cur">00:00.00</span>
+          <span aria-hidden="true" class="cwc-time-dur">/</span>
+          <span id="readout-dur" class="cwc-time-dur">03:30.37</span>
+        </div>
+
+        <div class="cwc-segmented" role="group" aria-label="Audio source A/B comparison">
+          <button type="button" id="btn-src-cwc" class="cwc-seg-btn active" aria-pressed="true">
+            CWC Pure-Code
+          </button>
+          <button type="button" id="btn-src-ref" class="cwc-seg-btn" aria-pressed="false">
+            Original MP3 Ref
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div id="cwc-error-slot" class="cwc-error-banner" hidden></div>
+
+    <!-- Asymmetric Split Studio Console -->
+    <section class="cwc-console-grid" id="stems-section">
+      <!-- Left Control Column: 5-Layer Real-Time Orthogonal Stem Matrix -->
+      <aside class="cwc-panel" aria-label="5-Layer Stem Matrix">
+        <div class="cwc-panel-head">
+          <h2 class="cwc-panel-title">5-Layer Stem Matrix</h2>
+          <span class="cwc-panel-sub tabular" id="readout-cpu">Worklet Ready (128-smp)</span>
+        </div>
+        <div class="cwc-stem-list" id="stem-list"></div>
+        <div class="cwc-stem-presets">
+          <div class="cwc-stem-top">
+            <span class="cwc-stem-name">Master Output Ceiling</span>
+            <span class="cwc-gain-val tabular" id="readout-master">98%</span>
+          </div>
+          <input
+            type="range"
+            id="slider-master-gain"
+            class="cwc-slider"
+            min="0"
+            max="120"
+            value="98"
+            aria-label="Master output gain percent"
+          />
+          <div class="cwc-preset-grid">
+            <button type="button" class="cwc-preset-btn" data-preset="full">Full Mix</button>
+            <button type="button" class="cwc-preset-btn" data-preset="vocal">Vocal Focus</button>
+            <button type="button" class="cwc-preset-btn" data-preset="backing">Instrumental</button>
+            <button type="button" class="cwc-preset-btn" data-preset="side">Stereo Side</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Viewport Canvas Stage -->
+      <section class="cwc-panel" aria-label="Acoustic Field and Streaming Viewport">
+        <div class="cwc-panel-head">
+          <h2 class="cwc-panel-title">Streaming Acoustic Field &amp; Spectrum</h2>
+          <span class="cwc-panel-sub tabular" id="readout-frame">Frame 0 / 18,122 · Bar 1</span>
+        </div>
+        <div class="cwc-stage-body">
+          <div class="cwc-canvas-wrap">
+            <canvas
+              id="cwc-stage-canvas"
+              data-testid="cwc-stage-canvas"
+              class="cwc-stage-canvas"
+              aria-label="Interactive song waveform overview, 32-band Bark spectrum, and stereo oscilloscope"
+            ></canvas>
+            <div id="crosshair-hud" class="cwc-crosshair-hud tabular">Click timeline to seek</div>
+          </div>
+
+          <div class="cwc-lyric-banner" aria-live="polite">
+            <div id="lyric-now" class="cwc-lyric-now">下个，路口，见 · CabronWEC Pure-Code Stream</div>
+            <div id="lyric-next" class="cwc-lyric-next">Next: 作词: 李宇春</div>
+          </div>
+
+          <div class="cwc-chunk-strip" id="chunk-strip" aria-label="Streaming Chunks 0 to 7"></div>
+        </div>
+      </section>
+    </section>
+
+    <!-- Lower Inspection & Telemetry Deck -->
+    <section class="cwc-deck" id="deck-section" aria-label="Mathematical Inspection and Benchmarks">
+      <div class="cwc-deck-head">
+        <div class="cwc-segmented" role="tablist" aria-label="Inspection views">
+          <button type="button" role="tab" class="cwc-seg-btn active" data-tab="equations" aria-selected="true">
+            Equations &amp; Frame Code
+          </button>
+          <button type="button" role="tab" class="cwc-seg-btn" data-tab="metrics" aria-selected="false">
+            Fidelity &amp; Compression
+          </button>
+          <button type="button" role="tab" class="cwc-seg-btn" data-tab="lyrics" aria-selected="false">
+            Timed Cue Sheet
+          </button>
+        </div>
+        <span class="cwc-panel-sub tabular" id="readout-chunk-summary">8 Chunks · Pure JS Math</span>
+      </div>
+      <div class="cwc-deck-body" id="deck-body"></div>
+    </section>
+  </main>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

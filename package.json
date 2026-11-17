@@ -1,0 +1,18 @@
+{
+  "name": "next-intersection-pure-code",
+  "version": "9.0.0",
+  "private": true,
+  "type": "module",
+  "description": "100% 纯明文数学微分方程、Glasberg-Moore ERB 声道模态与物理建模 10 轨立体声音乐合成工作台。",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js",
+    "build": "node --check server.js && node --check cabron-wec/src/dsp/mdct-core.js && node --check cabron-wec/src/dsp/cwc-stream-decoder.js && node --check cabron-wec/src/dsp/cwc-worklet.js && node --check cabron-wec/src/modules/cwc-audio-engine.js && node --check cabron-wec/src/main.js",
+    "start": "node server.js",
+    "lint": "node --check server.js && find cabron-wec/src cabron-wec/data -name '*.js' -print0 | xargs -0 -n 1 node --check",
+    "test": "node --test cabron-wec/tests/cwc-dsp.test.mjs"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "version": "V9.0 Pure Mathematical Code Engine",
+  "zeroLzma": true,
+  "zeroBase122": true,
+  "zeroBinarySamples": true,
+  "tracksCount": 10,
+  "vocalModelAndScoreBytes": 34723,
+  "vocalModelAndScoreGzipBytes": 7419,
+  "bandModelAndScoreBytes": 8704,
+  "bandModelAndScoreGzipBytes": 3024,
+  "totalModelAndScoreBytes": 43427,
+  "totalModelAndScoreGzipBytes": 10463,
+  "dspEngineBytes": 58870,
+  "dspEngineGzipBytes": 17826,
+  "totalAudioCorePlainJsBytes": 102297,
+  "totalAudioCoreGzipBytes": 28203
+}
