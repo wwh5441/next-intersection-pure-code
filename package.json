@@ -1,18 +1,26 @@
 {
   "name": "next-intersection-pure-code",
-  "version": "9.0.0",
+  "version": "10.0.0",
   "private": true,
   "type": "module",
-  "description": "100% 纯明文数学微分方程、Glasberg-Moore ERB 声道模态与物理建模 10 轨立体声音乐合成工作台。",
-  "main": "server.js",
+  "description": "CabronWEC (CWC-5X) 100% 纯代码高压缩比 MDCT-TDAC + 24-Bark LSQ + M/S 耦合 AudioWorklet 实时流式音乐合成工作台。",
+  "main": "server.ts",
   "scripts": {
-    "dev": "node server.js",
-    "build": "node --check server.js && node --check cabron-wec/src/dsp/mdct-core.js && node --check cabron-wec/src/dsp/cwc-stream-decoder.js && node --check cabron-wec/src/dsp/cwc-worklet.js && node --check cabron-wec/src/modules/cwc-audio-engine.js && node --check cabron-wec/src/main.js",
-    "start": "node server.js",
-    "lint": "node --check server.js && find cabron-wec/src cabron-wec/data -name '*.js' -print0 | xargs -0 -n 1 node --check",
-    "test": "node --test cabron-wec/tests/cwc-dsp.test.mjs"
+    "dev": "node server.ts",
+    "start": "node server.ts",
+    "build": "tsc --noEmit && node --check tools/compile-cwc.mjs && node --check tools/build-wec.mjs && node --check cabron-wec/src/dsp/mdct-core.js && node --check cabron-wec/src/dsp/cwc-entropy.js && node --check cabron-wec/src/dsp/cwc-wec-container.js && node --check cabron-wec/src/dsp/cwc-stream-decoder.js && node --check cabron-wec/src/dsp/cwc-worklet.js && node --check cabron-wec/src/modules/cwc-audio-engine.js && node --check cabron-wec/src/main.js",
+    "lint": "tsc --noEmit && find cabron-wec/src cabron-wec/data -name '*.js' -print0 | xargs -0 -n 1 node --check",
+    "test": "npx --yes tsx --test cabron-wec/tests/cwc-dsp.test.ts",
+    "compile:cwc": "node tools/compile-cwc.mjs && node tools/build-wec.mjs",
+    "compile:wec": "node tools/build-wec.mjs"
   },
   "dependencies": {
-    "express": "^4.21.2"
+    "@types/compression": "^1.8.1",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.6",
+    "compression": "^1.8.2",
+    "express": "^5.3.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
   }
 }

@@ -1,0 +1,351 @@
+#!/usr/bin/env python3
+"""Compute exact V9R1 Dual-Dictionary Pure-Code byte metrics & build standalone offline HTML editions."""
+
+import gzip
+import json
+import re
+from pathlib import Path
+from typing import Dict, List, Tuple
+
+ROOT = Path(__file__).resolve().parent.parent
+
+SHARED_VOCAL_MODELS = [
+    "models/singer-core.js",
+    "models/syllable-atlas.js",
+    "data/vocal-lyrics.js",
+]
+
+SHARED_BAND_MODELS = [
+    "models/instrument-physics.js",
+    "models/band-motif-atlas.js",
+    "data/song-structure.js",
+]
+
+TIER_VOCAL_SCORE_FILES = {
+    "ultra": "data/vocal-score-ultra.js",
+    "expressive": "data/vocal-score-expressive.js",
+}
+
+TIER_BAND_ARRANGEMENT_FILES = {
+    "ultra": "data/band-arrangement-ultra.js",
+    "expressive": "data/band-arrangement-expressive.js",
+}
+
+DSP_ENGINE_MODULES = [
+    "src/dsp/fft-minphase.js",
+    "src/dsp/motif-expander.js",
+    "src/dsp/vocal-coart-synth.js",
+    "src/dsp/drums-modal-synth.js",
+    "src/dsp/space-fdn-synth.js",
+    "src/dsp/bass-guitar-keys-synth.js",
+    "src/dsp/v9r1-renderer.js",
+]
+
+UI_MODULES = [
+    "data/benchmarks.js",
+    "src/state/studio-store.js",
+    "src/modules/audio-mixer.js",
+    "src/components/header-metrics.js",
+    "src/components/transport-bar.js",
+    "src/components/score-motif-canvas.js",
+    "src/components/stem-mixer.js",
+    "src/components/dictionary-inspector.js",
+    "src/main.js",
+]
+
+CSS_FILES = [
+    "styles/tokens.css",
+    "styles/layout.css",
+    "styles/components/transport.css",
+    "styles/components/visualizer.css",
+    "styles/components/mixer.css",
+    "styles/components/inspector.css",
+]
+
+
+def gzip_size(data: bytes) -> int:
+    return len(gzip.compress(data, compresslevel=9))
+
+
+def bundle_module_scoped(js_src: str, label: str) -> str:
+    exported_names = []
+    body_lines = []
+    skipping_import = False
+
+    for line in js_src.splitlines():
+        s = line.strip()
+        if skipping_import:
+            if ";" in s:
+                skipping_import = False
+            continue
+        if s.startswith("import "):
+            if ";" not in s:
+                skipping_import = True
+            continue
+
+        m_const = re.match(r"^(\s*)export\s+(?:const|let)\s+([A-Za-z0-9_$]+)\s*=", line)
+        if m_const:
+            indent, name = m_const.groups()
+            exported_names.append(name)
+            line = re.sub(
+                r"^\s*export\s+(?:const|let)\s+" + re.escape(name) + r"\s*=",
+                f"{indent}{name} =",
+                line,
+            )
+            body_lines.append(line)
+            continue
+
+        m_fn = re.match(r"^(\s*)export\s+(async\s+)?function\s+([A-Za-z0-9_$]+)\s*\(", line)
+        if m_fn:
+            indent, async_kw, name = m_fn.groups()
+            exported_names.append(name)
+            ak = async_kw or ""
+            line = re.sub(
+                r"^\s*export\s+(?:async\s+)?function\s+" + re.escape(name) + r"\s*\(",
+                f"{indent}{name} = {ak}function {name}(",
+                line,
+            )
+            body_lines.append(line)
+            continue
+
+        m_cls = re.match(r"^(\s*)export\s+class\s+([A-Za-z0-9_$]+)\b", line)
+        if m_cls:
+            indent, name = m_cls.groups()
+            exported_names.append(name)
+            line = re.sub(
+                r"^\s*export\s+class\s+" + re.escape(name) + r"\b",
+                f"{indent}{name} = class {name}",
+                line,
+            )
+            body_lines.append(line)
+            continue
+
+        body_lines.append(line)
+
+    decl = f"var {', '.join(exported_names)};\n" if exported_names else ""
+    return f"// --- {label} ---\n{decl}{{\n" + "\n".join(body_lines) + "\n}"
+
+
+def compute_metrics() -> Dict:
+    per_file = {}
+    all_tracked = (
+        SHARED_VOCAL_MODELS
+        + SHARED_BAND_MODELS
+        + list(TIER_VOCAL_SCORE_FILES.values())
+        + list(TIER_BAND_ARRANGEMENT_FILES.values())
+        + ["data/tiers-registry.js", "src/dsp/v9r1-worker.js"]
+        + DSP_ENGINE_MODULES
+        + UI_MODULES
+        + CSS_FILES
+    )
+    for rel in all_tracked:
+        raw = (ROOT / rel).read_bytes()
+        per_file[rel] = {
+            "rawBytes": len(raw),
+            "gzipBytes": gzip_size(raw),
+        }
+
+    def group_stats(rels: List[str]) -> Tuple[int, int]:
+        concat = b"\n".join((ROOT / r).read_bytes() for r in rels)
+        raw_sum = sum(per_file[r]["rawBytes"] for r in rels)
+        return raw_sum, gzip_size(concat)
+
+    dsp_raw, dsp_gz = group_stats(DSP_ENGINE_MODULES)
+
+    tiers_metrics = {}
+    for tid in ["ultra", "expressive"]:
+        voc_score_rel = TIER_VOCAL_SCORE_FILES[tid]
+        band_arr_rel = TIER_BAND_ARRANGEMENT_FILES[tid]
+        voc_rels = SHARED_VOCAL_MODELS + [voc_score_rel]
+        band_rels = SHARED_BAND_MODELS + [band_arr_rel]
+        tot_rels = voc_rels + band_rels
+        core_rels = tot_rels + DSP_ENGINE_MODULES
+
+        voc_raw, voc_gz = group_stats(voc_rels)
+        band_raw, band_gz = group_stats(band_rels)
+        tot_raw, tot_gz = group_stats(tot_rels)
+        core_raw, core_gz = group_stats(core_rels)
+
+        tiers_metrics[tid] = {
+            "vocalScoreOnlyBytes": per_file[voc_score_rel]["rawBytes"],
+            "vocalScoreOnlyGzipBytes": per_file[voc_score_rel]["gzipBytes"],
+            "vocalModelAndScoreBytes": voc_raw,
+            "vocalModelAndScoreGzipBytes": voc_gz,
+            "bandArrangementOnlyBytes": per_file[band_arr_rel]["rawBytes"],
+            "bandArrangementOnlyGzipBytes": per_file[band_arr_rel]["gzipBytes"],
+            "bandModelAndScoreBytes": band_raw,
+            "bandModelAndScoreGzipBytes": band_gz,
+            "totalModelAndScoreBytes": tot_raw,
+            "totalModelAndScoreGzipBytes": tot_gz,
+            "totalAudioCorePlainJsBytes": core_raw,
+            "totalAudioCoreGzipBytes": core_gz,
+        }
+
+    dual_tot_rels = (
+        SHARED_VOCAL_MODELS
+        + SHARED_BAND_MODELS
+        + list(TIER_VOCAL_SCORE_FILES.values())
+        + list(TIER_BAND_ARRANGEMENT_FILES.values())
+        + ["data/tiers-registry.js"]
+    )
+    dual_raw, dual_gz = group_stats(dual_tot_rels)
+
+    return {
+        "version": "V9R1 Pure-Code Dual-Dictionary Generative Engine (Re-Anchored from V8.5)",
+        "reAnchoredFrom": "V8.5 Event-Syllable WaveCode",
+        "zeroLzma": True,
+        "zeroBase122": True,
+        "zeroBlindMdctFrames": True,
+        "zeroBinarySamples": True,
+        "tracksCount": 10,
+        "vocalSyllableAtlasCount": 97,
+        "bandMotifAtlasCounts": {"drums": 18, "bass": 22, "harmony": 22, "total": 62},
+        "dspEngineBytes": dsp_raw,
+        "dspEngineGzipBytes": dsp_gz,
+        "tiers": tiers_metrics,
+        "dualCombinedModelAndScoreBytes": dual_raw,
+        "dualCombinedModelAndScoreGzipBytes": dual_gz,
+        "files": per_file,
+    }
+
+
+def make_tiers_registry_js(included_tiers: List[str], default_tier: str) -> str:
+    entries = []
+    if "ultra" in included_tiers:
+        entries.append(
+            "  ultra: { id: 'ultra', vocalProfile: VOCAL_PROFILE_ULTRA, vocalScore: VOCAL_SCORE_ULTRA, bandProfile: BAND_PROFILE_ULTRA, bandArrangement: BAND_ARRANGEMENT_ULTRA }"
+        )
+    if "expressive" in included_tiers:
+        entries.append(
+            "  expressive: { id: 'expressive', vocalProfile: VOCAL_PROFILE_EXPRESSIVE, vocalScore: VOCAL_SCORE_EXPRESSIVE, bandProfile: BAND_PROFILE_EXPRESSIVE, bandArrangement: BAND_ARRANGEMENT_EXPRESSIVE }"
+        )
+    body = ",\n".join(entries)
+    return (
+        f"// --- data/tiers-registry.js (standalone: {','.join(included_tiers)}) ---\n"
+        f"var V9R1_TIERS, DEFAULT_V9R1_TIER;\n{{\n"
+        f"  V9R1_TIERS = {{\n{body}\n  }};\n"
+        f"  DEFAULT_V9R1_TIER = '{default_tier}';\n}}"
+    )
+
+
+def build_standalone_edition(
+    out_name: str,
+    title_label: str,
+    included_tiers: List[str],
+    default_tier: str,
+) -> Tuple[Path, int, int]:
+    css_bundle = "\n\n".join((ROOT / c).read_text("utf-8") for c in CSS_FILES)
+
+    tier_voc_rels = [TIER_VOCAL_SCORE_FILES[t] for t in included_tiers]
+    tier_band_rels = [TIER_BAND_ARRANGEMENT_FILES[t] for t in included_tiers]
+    core_before_registry = SHARED_VOCAL_MODELS + SHARED_BAND_MODELS + tier_voc_rels + tier_band_rels
+
+    parts = [bundle_module_scoped((ROOT / m).read_text("utf-8"), m) for m in core_before_registry]
+    parts.append(make_tiers_registry_js(included_tiers, default_tier))
+    for m in DSP_ENGINE_MODULES:
+        parts.append(bundle_module_scoped((ROOT / m).read_text("utf-8"), m))
+
+    shared_core_js = "\n\n".join(parts)
+    worker_tail_js = bundle_module_scoped(
+        (ROOT / "src/dsp/v9r1-worker.js").read_text("utf-8"),
+        "src/dsp/v9r1-worker.js",
+    )
+    ui_only_js = "\n\n".join(bundle_module_scoped((ROOT / m).read_text("utf-8"), m) for m in UI_MODULES)
+    worker_tail_json = json.dumps(worker_tail_js, ensure_ascii=False)
+
+    out_path = ROOT / out_name
+    html = f"""<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title_label}</title>
+  <link rel="icon" href="data:," />
+  <style>
+{css_bundle}
+  </style>
+</head>
+<body>
+  <main class="studio-shell">
+    <section class="panel-card" id="panel-header-metrics"></section>
+    <section class="panel-card" id="panel-transport"></section>
+    <section class="panel-card" id="panel-visualizer"></section>
+    <section class="panel-card" id="panel-mixer"></section>
+    <section class="panel-card" id="panel-inspector"></section>
+    <footer class="studio-footer">
+      V9R1 Pure-Math Dual-Dictionary Engine · Standalone Plain-Text Offline Edition
+    </footer>
+  </main>
+  <script id="v9r1-core-src">
+{shared_core_js}
+  </script>
+  <script>
+window.__V9R1_SINGLE_HTML__ = true;
+window.__V9R1_WORKER_SOURCE__ = document.getElementById('v9r1-core-src').textContent + "\\n" + {worker_tail_json};
+  </script>
+  <script type="module">
+{ui_only_js}
+  </script>
+</body>
+</html>
+"""
+    out_path.write_text(html, encoding="utf-8")
+    raw_b = out_path.read_bytes()
+    return out_path, len(raw_b), gzip_size(raw_b)
+
+
+def main():
+    metrics = compute_metrics()
+
+    editions = [
+        (
+            "ultra",
+            "下个路口见_V9R1_极简双字典版.html",
+            "下个，路口，见 · V9R1 纯代码双字典 10 轨极简档 (114.4 KB Gzip 乐谱+字典)",
+            ["ultra"],
+            "ultra",
+        ),
+        (
+            "expressive",
+            "下个路口见_V9R1_精修双字典版.html",
+            "下个，路口，见 · V9R1 纯代码双字典 10 轨精修档 (24维人声 + 全曲微变奏)",
+            ["expressive"],
+            "expressive",
+        ),
+        (
+            "dual",
+            "下个路口见_V9R1_双档完整版.html",
+            "下个，路口，见 · V9R1 纯代码双字典双档对比工作台 (Ultra + Expressive)",
+            ["ultra", "expressive"],
+            "ultra",
+        ),
+    ]
+
+    metrics["standaloneHtmlEditions"] = {}
+    for key, fname, title, tlist, def_t in editions:
+        _, raw_len, gz_len = build_standalone_edition(fname, title, tlist, def_t)
+        metrics["standaloneHtmlEditions"][key] = {
+            "file": fname,
+            "rawBytes": raw_len,
+            "gzipBytes": gz_len,
+        }
+
+    metrics_path = ROOT / "data" / "code-metrics.json"
+    metrics_path.write_text(json.dumps(metrics, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+    u = metrics["tiers"]["ultra"]
+    e = metrics["tiers"]["expressive"]
+    print("=== V9R1 Pure-Code Dual-Dictionary Byte Report ===")
+    print(f"  [Ultra]      Vocal (Atlas+Score)  : {u['vocalModelAndScoreBytes']:>9,} B ({u['vocalModelAndScoreBytes']/1024:6.2f} KB) | Gzip: {u['vocalModelAndScoreGzipBytes']:>7,} B ({u['vocalModelAndScoreGzipBytes']/1024:6.2f} KB)")
+    print(f"  [Ultra]      Band  (Atlas+Sched)  : {u['bandModelAndScoreBytes']:>9,} B ({u['bandModelAndScoreBytes']/1024:6.2f} KB) | Gzip: {u['bandModelAndScoreGzipBytes']:>7,} B ({u['bandModelAndScoreGzipBytes']/1024:6.2f} KB)")
+    print(f"  [Ultra]      Full 10-Track Data   : {u['totalModelAndScoreBytes']:>9,} B ({u['totalModelAndScoreBytes']/1024:6.2f} KB) | Gzip: {u['totalModelAndScoreGzipBytes']:>7,} B ({u['totalModelAndScoreGzipBytes']/1024:6.2f} KB)")
+    print(f"  [Expressive] Vocal (Atlas+Score)  : {e['vocalModelAndScoreBytes']:>9,} B ({e['vocalModelAndScoreBytes']/1024:6.2f} KB) | Gzip: {e['vocalModelAndScoreGzipBytes']:>7,} B ({e['vocalModelAndScoreGzipBytes']/1024:6.2f} KB)")
+    print(f"  [Expressive] Band  (Atlas+Sched)  : {e['bandModelAndScoreBytes']:>9,} B ({e['bandModelAndScoreBytes']/1024:6.2f} KB) | Gzip: {e['bandModelAndScoreGzipBytes']:>7,} B ({e['bandModelAndScoreGzipBytes']/1024:6.2f} KB)")
+    print(f"  [Expressive] Full 10-Track Data   : {e['totalModelAndScoreBytes']:>9,} B ({e['totalModelAndScoreBytes']/1024:6.2f} KB) | Gzip: {e['totalModelAndScoreGzipBytes']:>7,} B ({e['totalModelAndScoreGzipBytes']/1024:6.2f} KB)")
+    print(f"  [DSP Engine] 10-Track Equations   : {metrics['dspEngineBytes']:>9,} B ({metrics['dspEngineBytes']/1024:6.2f} KB) | Gzip: {metrics['dspEngineGzipBytes']:>7,} B ({metrics['dspEngineGzipBytes']/1024:6.2f} KB)")
+    for k, info in metrics["standaloneHtmlEditions"].items():
+        print(f"  [HTML:{k:<10}] {info['file']}: {info['rawBytes']/1024:6.2f} KB | Gzip: {info['gzipBytes']/1024:6.2f} KB")
+
+
+if __name__ == "__main__":
+    main()

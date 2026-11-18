@@ -1,16 +1,16 @@
 // 5-Layer Real-Time Orthogonal Stem Matrix Component
-
 import { cwcEngine } from '../modules/cwc-audio-engine.js';
 import { cwcStore } from '../state/cwc-store.js';
 
 export function mountStemMatrix(containerEl) {
   const renderAll = () => {
-    const { stems } = cwcStore.getState();
+    const { stems, audioSource } = cwcStore.getState();
     const anySolo = stems.some((s) => s.solo);
+    const refActive = audioSource === 'ref';
 
     containerEl.innerHTML = stems
       .map((s, idx) => {
-        const dimmed = (anySolo && !s.solo) || s.muted;
+        const dimmed = refActive || (anySolo && !s.solo) || s.muted;
         const pct = Math.round(s.gain * 100);
         return `
           <div class="cwc-stem-row ${dimmed ? 'is-dimmed' : ''}" data-stem-idx="${idx}">
@@ -81,8 +81,13 @@ export function mountStemMatrix(containerEl) {
     if (lbl) lbl.textContent = `${slider.value}%`;
   });
 
-  // Update RMS bars cleanly when store telemetry updates (0% idle CPU)
+  let prevSource = cwcStore.getState().audioSource;
   cwcStore.subscribe((st) => {
+    if (st.audioSource !== prevSource) {
+      prevSource = st.audioSource;
+      renderAll();
+      return;
+    }
     for (let i = 0; i < 5; i++) {
       const bar = containerEl.querySelector(`[data-rms-bar="${i}"]`);
       if (bar) bar.style.width = `${Math.min(100, Math.round((st.stems[i]?.rms || 0) * 100))}%`;

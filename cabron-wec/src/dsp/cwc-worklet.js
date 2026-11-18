@@ -1,6 +1,6 @@
-// CabronWEC (CWC-4X) Real-Time AudioWorkletProcessor
-// Renders 128-sample hardware audio quanta directly from pure-code MDCT+PNS frames
-// using a zero-GC 512-sample frame cache and deterministic pre-roll seek.
+// CabronWEC (CWC-5X) Multi-Tier Real-Time AudioWorkletProcessor
+// Renders 128-sample hardware audio quanta directly from pure-code CSR chunks
+// across 3 live-switchable pure-code editions ('1m', '500k', 'hifi') with clickless TDAC pre-roll.
 
 import { CWC_HOP_M } from './mdct-core.js';
 import { CWCStreamDecoder } from './cwc-stream-decoder.js';
@@ -8,12 +8,19 @@ import { CWCStreamDecoder } from './cwc-stream-decoder.js';
 class CabronWecWorkletProcessor extends AudioWorkletProcessor {
   constructor() {
     super();
-    this.decoder = new CWCStreamDecoder(0);
+    this.decoders = {
+      '1m': new CWCStreamDecoder(0),
+      '500k': new CWCStreamDecoder(0),
+      hifi: new CWCStreamDecoder(0),
+      wec: new CWCStreamDecoder(0),
+    };
+    this.activeTier = '1m';
     this.playing = false;
     this.currentSample = 0;
     this.totalSamples = 0;
+    this.totalFrames = 0;
+    this.stemControls = {};
 
-    // 512-sample decoded frame cache (4 * 128-sample WebAudio quanta per MDCT hop)
     this.hopL = new Float32Array(CWC_HOP_M);
     this.hopR = new Float32Array(CWC_HOP_M);
     this.cachedFrameIdx = -1;
@@ -27,11 +34,50 @@ class CabronWecWorkletProcessor extends AudioWorkletProcessor {
       switch (msg.type) {
         case 'init':
           this.totalSamples = msg.totalSamples || 0;
-          this.decoder.setTotalFrames(msg.totalFrames || 0);
+          this.totalFrames = msg.totalFrames || 0;
+          if (msg.tier && this.decoders[msg.tier]) this.activeTier = msg.tier;
+          for (const dec of Object.values(this.decoders)) {
+            dec.setTotalFrames(this.totalFrames);
+          }
           break;
-        case 'chunk':
-          this.decoder.ingestChunk(msg.startFrame, msg.frames);
+        case 'chunk': {
+          const tier = msg.tier && this.decoders[msg.tier] ? msg.tier : '1m';
+          const dec = this.decoders[tier];
+          dec.ingestChunk(msg.chunkBundle);
+          if (tier === this.activeTier && this.cachedFrameIdx >= 0 && msg.chunkBundle) {
+            const { startFrame, frameCount } = msg.chunkBundle;
+            if (this.cachedFrameIdx >= startFrame && this.cachedFrameIdx < startFrame + frameCount) {
+              this.cachedFrameIdx = -1;
+            }
+          }
           break;
+        }
+        case 'wec-bundle': {
+          const fresh = new CWCStreamDecoder(this.totalFrames);
+          fresh.ingestChunk(msg.chunkBundle);
+          fresh.setStemControls(this.stemControls);
+          this.decoders.wec = fresh;
+          this.activeTier = 'wec';
+          if (this.totalSamples > 0) {
+            this.seek(this.currentSample);
+          } else {
+            this.cachedFrameIdx = -1;
+          }
+          break;
+        }
+        case 'tier': {
+          const nextTier = msg.tier && this.decoders[msg.tier] ? msg.tier : '1m';
+          if (nextTier !== this.activeTier) {
+            this.activeTier = nextTier;
+            this.decoders[nextTier].setStemControls(this.stemControls);
+            if (this.totalSamples > 0) {
+              this.seek(this.currentSample);
+            } else {
+              this.cachedFrameIdx = -1;
+            }
+          }
+          break;
+        }
         case 'play':
           if (typeof msg.sampleOffset === 'number') {
             this.seek(msg.sampleOffset);
@@ -47,7 +93,13 @@ class CabronWecWorkletProcessor extends AudioWorkletProcessor {
           this.emitTelemetry(null);
           break;
         case 'stems':
-          this.decoder.setStemControls(msg.controls || {});
+          this.stemControls = msg.controls || {};
+          for (const dec of Object.values(this.decoders)) {
+            dec.setStemControls(this.stemControls);
+          }
+          if (this.cachedFrameIdx >= 0 && this.activeDecoder.hasFrame(this.cachedFrameIdx)) {
+            this.seek(this.currentSample);
+          }
           break;
         default:
           break;
@@ -55,32 +107,39 @@ class CabronWecWorkletProcessor extends AudioWorkletProcessor {
     };
   }
 
+  get activeDecoder() {
+    return this.decoders[this.activeTier] || this.decoders['1m'];
+  }
+
   seek(sampleOffset) {
     const clamped = Math.max(0, Math.min(Math.max(0, this.totalSamples - 1), sampleOffset | 0));
     const targetFrame = Math.floor(clamped / CWC_HOP_M);
-    this.decoder.seekToFrame(targetFrame);
-    this.decoder.decodeFrame(targetFrame, this.hopL, this.hopR, 0);
+    const dec = this.activeDecoder;
+    dec.seekToFrame(targetFrame);
+    dec.decodeFrame(targetFrame, this.hopL, this.hopR, 0);
     this.cachedFrameIdx = targetFrame;
     this.currentSample = clamped;
   }
 
   emitTelemetry(avgQuantumMs = null) {
+    const dec = this.activeDecoder;
     this.port.postMessage({
       type: 'telemetry',
+      tier: this.activeTier,
       playing: this.playing,
       currentSample: this.currentSample,
       currentFrame: Math.floor(this.currentSample / CWC_HOP_M),
-      loadedFrames: this.decoder.loadedCount,
+      loadedFrames: dec.loadedCount,
       underruns: this.underruns,
       cpuMs: avgQuantumMs,
       layerRms: [
-        this.decoder.layerRms[0],
-        this.decoder.layerRms[1],
-        this.decoder.layerRms[2],
-        this.decoder.layerRms[3],
-        this.decoder.layerRms[4],
+        dec.layerRms[0],
+        dec.layerRms[1],
+        dec.layerRms[2],
+        dec.layerRms[3],
+        dec.layerRms[4],
       ],
-      spectrum32: Array.from(this.decoder.spectrum32),
+      spectrum32: Array.from(dec.spectrum32),
     });
   }
 
@@ -89,7 +148,7 @@ class CabronWecWorkletProcessor extends AudioWorkletProcessor {
     if (!out || out.length < 2) return true;
     const outL = out[0];
     const outR = out[1];
-    const blockLen = outL.length; // 128 samples
+    const blockLen = outL.length;
 
     if (!this.playing || this.totalSamples <= 0) {
       outL.fill(0);
@@ -97,6 +156,7 @@ class CabronWecWorkletProcessor extends AudioWorkletProcessor {
       return true;
     }
 
+    const dec = this.activeDecoder;
     const hasPerf = typeof performance !== 'undefined';
     const t0 = hasPerf ? performance.now() : 0;
 
@@ -115,12 +175,12 @@ class CabronWecWorkletProcessor extends AudioWorkletProcessor {
       const intra = this.currentSample - frameIdx * CWC_HOP_M;
 
       if (frameIdx !== this.cachedFrameIdx) {
-        if (!this.decoder.hasFrame(frameIdx)) {
+        if (!dec.hasFrame(frameIdx)) {
           this.underruns++;
           this.hopL.fill(0);
           this.hopR.fill(0);
         } else {
-          this.decoder.decodeFrame(frameIdx, this.hopL, this.hopR, 0);
+          dec.decodeFrame(frameIdx, this.hopL, this.hopR, 0);
         }
         this.cachedFrameIdx = frameIdx;
       }
@@ -133,9 +193,9 @@ class CabronWecWorkletProcessor extends AudioWorkletProcessor {
     if (hasPerf) {
       this.cpuAccumMs += performance.now() - t0;
     }
+
     this.telemetryCounter++;
     if (this.telemetryCounter >= 12) {
-      // ~30 Hz smooth UI/oscilloscope telemetry
       const avgMs = hasPerf ? this.cpuAccumMs / this.telemetryCounter : null;
       this.telemetryCounter = 0;
       this.cpuAccumMs = 0;
